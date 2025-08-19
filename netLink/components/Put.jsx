@@ -3,7 +3,7 @@ import React from 'react'
 import { theme } from '../constants/theme'
 import { hp } from '../helpers/common'
 
-const Input = (props) => {
+const Put = (props) => {
   return (
     <View style={[styles.container, props.containerStyles && props.containerStyles]}>
         {
@@ -19,7 +19,7 @@ const Input = (props) => {
   )
 }
 
-export default Input
+export default Put
 
 const styles = StyleSheet.create({
     container: {

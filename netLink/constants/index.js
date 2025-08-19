@@ -1,0 +1,2 @@
+export const supabaseUrl = 'https://ossreuxwrhhztcjzhwzs.supabase.co';
+export const supabaseAmonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zc3JldXh3cmhoenRjanpod3pzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1OTYzMjksImV4cCI6MjA3MTE3MjMyOX0.dRc8QT1VLsvJaQIurdZofjtGCXXhbeFgww4R8SItSNI'

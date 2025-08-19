@@ -7,8 +7,9 @@ import { StatusBar } from 'expo-status-bar'
 import BackButton from '../components/BackButton'
 import { useRouter } from 'expo-router'
 import { hp, wp } from '../helpers/common'
-import Input from '../components/input'
+import Put from '../components/Put'
 import Button from '../components/Button'
+import { supabase } from '../lib/supabase'
 
 
 const Login = () => {
@@ -22,6 +23,23 @@ const Login = () => {
         Alert.alert('Login', "Svp entrez tous les champs")
         return;
       }
+
+      let email = emailRef.current.trim();
+      let password = passwordRef.current.trim();
+      setLoading(true);
+
+      const {error} = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      setLoading(false)
+      console.log('error:', error)
+
+      if(error) {
+        Alert.alert('Login', error.message);
+      }
+
     }
 
   return (
@@ -44,13 +62,13 @@ const Login = () => {
               <Text style={{fontSize: hp(1.5), color: theme.colors.text}}>
                 Veuillez vous connecter pour continuer
               </Text>
-              <Input 
+              <Put 
                 icon={<Icon name='mail' size={26} strokeWidth={1.6}/>}
                 placeholder='Entrez votre email'
                 onChangeText={value=> emailRef.current = value}
               />
 
-              <Input 
+              <Put
                 icon={<Icon name='lock' size={26} strokeWidth={1.6}/>}
                 placeholder='Entrez votre Mot de passe'
                 secureTextEntry
