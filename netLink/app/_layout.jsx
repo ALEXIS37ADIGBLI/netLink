@@ -3,6 +3,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { getUserData } from '../services/UserService';
 
 // ⚡️ le layout racine
 export default function RootLayout() {
@@ -14,30 +15,35 @@ export default function RootLayout() {
 }
 
 function MainLayout() {
-  const { setAuth } = useAuth();
+  const { setAuth, setUserData } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    const { data: subscription } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        console.log('session user:', session?.user?.id);
-        setAuth(session?.user || null); // <-- important: mettre à jour ton contexte
-        if(session){
-          //dirigé vers la page home
-          setAuth(session?.user)
-          //mettre le auth
-          router.replace('/Home');
-        } else {
-          //mettre auth à null
-          setAuth(null)
-          // rediriger vers la page d'acceuil
-          router.replace('/Welcome');
-        }
-      }
-    );
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange((_event, session) => {
+    console.log('session user:', session?.user?.id);
+    setAuth(session?.user || null);
 
-    return () => subscription?.unsubscribe(); // cleanup
-  }, []);
+    if (session) {
+      updateUserData(session?.user);
+      router.replace('/Home');
+    } else {
+      setAuth(null);
+      router.replace('/Welcome');
+    }
+  });
+
+  return () => {
+    subscription.unsubscribe();
+  };
+}, []);
+
+  const updateUserData = async (user)=> {
+    let res = await getUserData(user?.id);
+    // console.log('got user data: ', res)
+    if(res.success) setUserData(res.data);
+  }
 
   return (
     <SafeAreaProvider>
