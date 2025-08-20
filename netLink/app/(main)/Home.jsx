@@ -15,14 +15,14 @@ const Home = () => {
     const {user, setAuth} = useAuth();
     const router = useRouter();
 
-    const onLogout = async () => {
-        // setAuth(null);
-        const {error} = await supabase.auth.signOut();
+    // const onLogout = async () => {
+    //     // setAuth(null);
+    //     const {error} = await supabase.auth.signOut();
 
-        if(error) {
-            Alert.alert('Logout', "Error sign out")
-        }
-    }
+    //     if(error) {
+    //         Alert.alert('Logout', "Error sign out")
+    //     }
+    // }
 
   return (
     <ScreenWrapper bg='white'>
@@ -48,7 +48,7 @@ const Home = () => {
           </View>
         </View>
       </View>
-      <Button title='logout' onPress={onLogout} />
+      {/* <Button title='logout' onPress={onLogout} /> */}
     </ScreenWrapper>
   )
 }

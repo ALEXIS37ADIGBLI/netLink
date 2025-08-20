@@ -26,7 +26,8 @@ function MainLayout() {
     setAuth(session?.user || null);
 
     if (session) {
-      updateUserData(session?.user);
+      setAuth(session?.user)
+      updateUserData(session?.user, session?.user?.email);
       router.replace('/Home');
     } else {
       setAuth(null);
@@ -39,10 +40,10 @@ function MainLayout() {
   };
 }, []);
 
-  const updateUserData = async (user)=> {
+  const updateUserData = async (user, email)=> {
     let res = await getUserData(user?.id);
     // console.log('got user data: ', res)
-    if(res.success) setUserData(res.data);
+    if(res.success) setUserData({...res.data, email});
   }
 
   return (
