@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useRef, useState } from "react";
 import ScreenWrapper from "../../components/ScreenWrapper";
 import Header from "../../components/Header";
@@ -10,6 +10,9 @@ import RichTextEditor from "../../components/RichTextEditor";
 import { useRouter } from "expo-router";
 import Icon from "../../assets/icons";
 import Button from "../../components/Button";
+import * as ImagePicker from 'expo-image-picker'
+import { getSupabaseFileUrl } from "../../services/ImageService";
+
 
 const NewPost = () => {
   const { user } = useAuth();
@@ -21,10 +24,60 @@ const NewPost = () => {
 
   const onPick = async (isImage) =>{
 
+    let mediaConfig = {
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 0.7,
+    }
+
+    if(!isImage){
+        mediaConfig = {
+            mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+            allowsEditing: true,
+        }
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({mediaConfig});
+
+    if(!result.canceled){
+        setFile(result.assets[0]);
+    }
+    
+  }
+
+  const isLocalFile = file => {
+    if(!file) return null;
+    if(typeof file == 'object') return true;
+
+    return false;
+  }
+
+  const getFileType = file => {
+    if(!file) return null;
+    if(isLocalFile(file)){
+        return file.type;
+    }
+
+    if(file.includes('postImage')){
+        return 'image';
+    }
+
+    return 'video';
   }
 
   const onSubmit = async ()=> {
-    
+
+  }
+
+  const getFileUri = file => {
+    if(!file) return null;
+
+    if(isLocalFile(file)){
+        return file.uri;
+    }
+
+    return getSupabaseFileUrl(file)?.uri;
   }
   return (
     <ScreenWrapper bg="white">
@@ -48,6 +101,26 @@ const NewPost = () => {
               onChange={(body) => (bodyRef.current = body)}
             />
           </View>
+
+
+        {
+            file && (
+                <View style={styles.file}>
+                    {
+                        getFileType(file) == 'video' ? (
+                            <></>
+                        ): (
+                            <Image source={{uri: getFileUri(file)}} resizeMode="cover" style={{flex: 1}}/>
+                        )
+                    }
+
+                    <Pressable style={styles.closeIcon} onPress={() => setFile(null)}>
+                        <Icon name='delete' size={20} color='white'/>
+                    </Pressable>
+                </View>
+            )
+        }
+
           <View style={styles.media}>
             <Text style={styles.addImageText}>Ajoutez à votre poste</Text>
             <View style={styles.mediaIcons}>
@@ -160,5 +233,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 10,
     right: 10,
+    padding: 7,
+    borderRadius: 50,
+    backgroundColor: "rgba(255,0,0,0.6)",
   },
 });
