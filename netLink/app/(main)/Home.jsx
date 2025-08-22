@@ -1,5 +1,5 @@
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import ScreenWrapper from '../../components/ScreenWrapper'
 import { Button } from 'react-native'
 import { useAuth } from '../../context/AuthContext'
@@ -9,11 +9,35 @@ import { theme } from '../../constants/theme'
 import Icon from '../../assets/icons'
 import { useRouter } from 'expo-router'
 import Avatar from '../../components/Avatar'
+import { fetchPosts } from '../../services/postService'
+import PostCard from '../../components/PostCard'
+
+let  limit = 0;
 
 const Home = () => {
 
     const {user, setAuth} = useAuth();
     const router = useRouter();
+
+    const [posts, setPosts] = useState([]);
+
+
+       useEffect(()=> {
+      getPosts();
+    },[])
+
+    const getPosts = async ()=> {
+      limit = limit + 10;
+      let res = await fetchPosts();
+      // console.log('result: ', res)
+      // console.log('user;', res.data[0].user);
+
+      if(res.success){
+        setPosts(res.data);
+      }
+    }
+
+ 
 
     // const onLogout = async () => {
     //     // setAuth(null);
@@ -47,6 +71,19 @@ const Home = () => {
             </Pressable>
           </View>
         </View>
+
+        <FlatList 
+          data={posts}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listStyle}
+          keyExtractor={item => item.id.toString()}
+          renderItem={({item}) => <PostCard 
+              item = {item}
+              currentUser={user}
+              router={router}
+          />} 
+        />
+
       </View>
       {/* <Button title='logout' onPress={onLogout} /> */}
     </ScreenWrapper>
