@@ -87,7 +87,7 @@ const EditProfile = () => {
     let imageSource = user.image && typeof user.image == 'object'? user.image.uri : getUserImageSrc(user.image);
 
   return (
-    <ScreenWrapper bg='white'>
+    <ScreenWrapper bg='#F3F8FF'>
         <View style={styles.container}>
             <ScrollView style={{flex: 1}}>
                 <Header 

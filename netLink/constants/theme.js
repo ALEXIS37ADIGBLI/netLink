@@ -1,27 +1,27 @@
 export const theme = {
   colors: {
-    // Palette bleue principale
-    primary: '#1D4ED8',        // Bleu riche (Boutons principaux)
-    primaryLight: '#3B82F6',   // Bleu vif (Hover/Active states)
-    primaryLighter: '#93C5FD', // Bleu très clair (Arrière-plans)
-    primaryDark: '#1E40AF',    // Bleu foncé (Boutons pressés)
-    
-    // Neutres
+    // Palette principale inspirée des réseaux sociaux
+    primary: '#E1306C',        // Rose Instagram moderne
+    primaryLight: '#F77737',   // Orange/rose (hover, highlights)
+    primaryLighter: '#FDDB92', // Jaune doux / pastel (fonds légers)
+    primaryDark: '#C13584',    // Violet-rose plus sombre
+
+    // Neutres modernes
     white: '#FFFFFF',          // Fond principal
-    lightGray: '#F3F4F6',      // Arrière-plans secondaires
-    mediumGray: '#E5E7EB',     // Bordures/Séparateurs
-    darkGray: '#6B7280',       // Texte secondaire
-    
+    lightGray: '#FAFAFA',      // Fond des cartes
+    mediumGray: '#E5E5E5',     // Bordures fines
+    darkGray: '#9CA3AF',       // Texte secondaire plus doux
+
     // Texte
-    text: '#111827',           // Noir bleuté (Texte principal)
-    textLight: '#4B5563',      // Texte secondaire
-    textInverted: '#FFFFFF',   // Texte sur fond coloré
-    
+    text: '#111827',           // Noir bleuté (titres)
+    textLight: '#6B7280',      // Gris moderne (sous-texte)
+    textInverted: '#FFFFFF',   // Texte sur fonds colorés
+
     // Accents et états
-    accent: '#2563EB',         // Bleu intermédiaire
-    error: '#DC2626',          // Rouge vif (Erreurs)
-    success: '#10B981',        // Vert émeraude (Succès)
-    warning: '#F59E0B',        // Orange ambré (Alertes)
+    accent: '#0095F6',         // Bleu Instagram (liens, actions)
+    error: '#EF4444',          // Rouge moderne (erreurs)
+    success: '#10B981',        // Vert frais (validations)
+    warning: '#F59E0B',        // Orange doux (alertes)
   },
 
   fonts: {
@@ -44,22 +44,22 @@ export const theme = {
     subtle: {
       shadowColor: '#000000',
       shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.05,
+      shadowOpacity: 0.06,
       shadowRadius: 3,
       elevation: 2,
     },
     medium: {
-      shadowColor: '#1E40AF',
+      shadowColor: '#000000',
       shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.1,
-      shadowRadius: 6,
+      shadowOpacity: 0.08,
+      shadowRadius: 8,
       elevation: 5,
     },
     floating: {
       shadowColor: '#000000',
       shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.1,
-      shadowRadius: 16,
+      shadowOpacity: 0.12,
+      shadowRadius: 18,
       elevation: 10,
     }
   }

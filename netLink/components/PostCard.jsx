@@ -145,78 +145,80 @@ const PostCard = ({
 export default PostCard
 
 const styles = StyleSheet.create({
-    container: {
-        gap: 10,
-        marginBottom: 15,
-        borderRadius: theme.radius.xxl*1.1,
-        borderCurve: 'continuous',
-        padding: 10,
-        paddingVertical: 12,
-        backgroundColor: 'white',
-        borderWidth: 0.5,
-        borderColor: theme.colors.darkGray,
-        shadowColor: '#000'
-    },
+  container: {
+    gap: 12,
+    marginBottom: 20,
+    borderRadius: theme.radius.xl,
+    borderCurve: "continuous",
+    padding: 14,
+    paddingVertical: 18,
+    backgroundColor: theme.colors.white,
+    borderWidth: 1,
+    borderColor: theme.colors.mediumGray,
+    ...theme.shadows.medium,
+  },
 
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between'
-    },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
 
-    userInfo: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8
-    },
+  userInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
 
-    username: {
-        fontSize: hp(1.4),
-        color: theme.colors.textDark,
-        fontWeight: theme.fonts.medium,
-    },
+  username: {
+    fontSize: hp(1.9),
+    color: theme.colors.text,
+    fontWeight: theme.fonts.semibold,
+  },
 
-    postTime: {
-        fontSize: hp(1.7),
-        color: theme.colors.textLight,
-        fontWeight: theme.fonts.medium,
-    },
+  postTime: {
+    fontSize: hp(1.5),
+    color: theme.colors.textLight,
+    fontWeight: theme.fonts.medium,
+  },
 
-    content: {
-        gap: 10, 
-    },
+  content: {
+    gap: 14,
+  },
 
-    postMedia: {
-        height: hp(40),
-        width: '100%',
-        borderRadius: theme.radius.xl,
-        borderCurve: 'continuous'
-    },
+  postMedia: {
+    height: hp(36),
+    width: "100%",
+    borderRadius: theme.radius.lg,
+    borderCurve: "continuous",
+    overflow: "hidden",
+  },
 
-    postBody: {
-        marginLeft: 5,
-    },
+  postBody: {
+    marginLeft: 6,
+    lineHeight: 22,
+    color: theme.colors.text,
+    fontSize: hp(1.8),
+  },
 
-    footer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 15
-    },
+  footer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 22,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderColor: theme.colors.mediumGray,
+  },
 
-    footerButton: {
-        marginLeft: 5,
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 4
-    },
+  footerButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
 
-    actions: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 18,
-    },
-
-    count: {
-        color: theme.colors.text,
-        fontSize: hp(1.8)
-    }
-})
+  count: {
+    color: theme.colors.text,
+    fontSize: hp(1.7),
+    fontWeight: theme.fonts.medium,
+  },
+});

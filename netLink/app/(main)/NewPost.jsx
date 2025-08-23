@@ -116,7 +116,7 @@ const NewPost = () => {
     return getSupabaseFileUrl(file)?.uri;
   };
   return (
-    <ScreenWrapper bg="white">
+    <ScreenWrapper bg='#F3F8FF'>
       <View style={styles.container}>
         <Header title="Créer un post" />
         <ScrollView contentContainerStyle={{ gap: 20 }}>
