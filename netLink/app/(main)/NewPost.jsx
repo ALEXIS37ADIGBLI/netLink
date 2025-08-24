@@ -75,8 +75,11 @@ const NewPost = () => {
   };
 
   const onSubmit = async () => {
-    if(!bodyRef.current && !file){
-      Alert.alert('Post:', "Svp écrivez quelque chose ou poster une photo ou vidéo");
+    if (!bodyRef.current && !file) {
+      Alert.alert(
+        "Post:",
+        "Svp écrivez quelque chose ou poster une photo ou vidéo"
+      );
       return;
     }
 
@@ -84,7 +87,7 @@ const NewPost = () => {
       file,
       body: bodyRef.current,
       userId: user?.id,
-    }
+    };
 
     //Logique e création de poste
     setLoading(true);
@@ -93,17 +96,14 @@ const NewPost = () => {
 
     // console.log('poste result: ', res)
 
-    if(res.success){
+    if (res.success) {
       setFile(null);
-      bodyRef.current = '';
-      editorRef.current?.setContentHTML('');
+      bodyRef.current = "";
+      editorRef.current?.setContentHTML("");
       router.back();
     } else {
-      Alert.alert('Post', res.msg);
+      Alert.alert("Post", res.msg);
     }
-
-
-
   };
 
   const getFileUri = (file) => {
@@ -116,7 +116,7 @@ const NewPost = () => {
     return getSupabaseFileUrl(file)?.uri;
   };
   return (
-    <ScreenWrapper bg='#F3F8FF'>
+    <ScreenWrapper bg="#F3F8FF">
       <View style={styles.container}>
         <Header title="Créer un post" />
         <ScrollView contentContainerStyle={{ gap: 20 }}>

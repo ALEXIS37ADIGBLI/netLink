@@ -10,35 +10,34 @@ import { theme } from "../constants/theme";
 const RichTextEditor = ({ editorRef, onChange }) => {
   return (
     <View style={{ minHeight: 285 }}>
-  <RichToolbar
-    editor={editorRef}
-    actions={[
-      actions.setBold,
-      actions.setItalic,
-      actions.insertBulletsList,
-      actions.insertOrderedList,
-      actions.insertLink,
-    ]}
-    style={styles.richBar}
-    selectedIconTint={theme.colors.primaryDark}
-    flatContainerStyle={styles.flatStyle}
-  />
+      <RichToolbar
+        editor={editorRef}
+        actions={[
+          actions.setBold,
+          actions.setItalic,
+          actions.insertBulletsList,
+          actions.insertOrderedList,
+          actions.insertLink,
+        ]}
+        style={styles.richBar}
+        selectedIconTint={theme.colors.primaryDark}
+        flatContainerStyle={styles.flatStyle}
+      />
 
-  <RichEditor
-    ref={editorRef}
-    containerStyle={styles.rich}
-    editorStyle={{
-      backgroundColor: 'white',
-      color: 'black',
-      placeholderColor: 'gray',
-      cssText: 'body {font-size: 16px;}',
-    }}
-    placeholder="Votre pensée..."
-    onChange={onChange}
-    initialHeight={200}
-  />
-</View>
-
+      <RichEditor
+        ref={editorRef}
+        containerStyle={styles.rich}
+        editorStyle={{
+          backgroundColor: "white",
+          color: "black",
+          placeholderColor: "gray",
+          cssText: "body {font-size: 16px;}",
+        }}
+        placeholder="Votre pensée..."
+        onChange={onChange}
+        initialHeight={200}
+      />
+    </View>
   );
 };
 
@@ -65,5 +64,5 @@ const styles = StyleSheet.create({
   flatStyle: {
     paddingHorizontal: 8,
     gap: 3,
-  }
+  },
 });
