@@ -26,7 +26,7 @@
 ## 📲 Installation
 
 👉 Pour tester l’application, téléchargez directement l’APK via ce lien :
-🔗 [Télécharger NetLink](lien_vers_ton_apk)
+🔗 [Télécharger NetLink]([lien_vers_ton_apk](https://expo.dev/accounts/alexisclever/projects/netLink/builds/c2e35c2f-395e-4c9a-8864-64f90ddbd882))
 
 ---
 
