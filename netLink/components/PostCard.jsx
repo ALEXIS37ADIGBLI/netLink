@@ -1,13 +1,20 @@
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import {
+  Alert,
+  Share,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { theme } from "../constants/theme";
 import Avatar from "./Avatar";
-import { hp, wp } from "../helpers/common";
+import { hp, stripHtmlTags, wp } from "../helpers/common";
 import moment from "moment";
 import Icon from "../assets/icons";
 import { RenderHTML } from "react-native-render-html";
 import { Image } from "expo-image";
-import { getSupabaseFileUrl } from "../services/ImageService";
+import { downloadFile, getSupabaseFileUrl } from "../services/ImageService";
 import { Video } from "expo-av";
 import { createPostLike, removePostLike } from "../services/postService";
 
@@ -28,63 +35,137 @@ const tagsStyles = {
   },
 };
 
-const PostCard = ({ item, currentUser, router, hasShadow = true }) => {
-  const onLike = async () => {
-    if (liked) {
-      let updatedLikes = likes.filter((like) => like.userId != currentUser?.id);
-      setLikes([...updatedLikes]);
+const PostCard = ({ item, currentUser, router, hasShadow = true, showMoreIcon = true }) => {
+  // Vérifications de sécurité
+  if (!item || !currentUser) {
+    console.warn("PostCard: item ou currentUser manquant");
+    return null;
+  }
 
-      let res = await removePostLike(item?.id, currentUser?.id);
+  const [loading, setLoading] = useState(false);
 
-      // console.log('res: ', res)
+  // État avec initialisation sécurisée
+  const [likes, setLikes] = useState(() => {
+    return Array.isArray(item?.postLikes) ? item.postLikes : [];
+  });
 
-      if (!res.success) {
-        Alert.alert("Oups,", "Quelque problème de notre coté");
-      }
-    } else {
-      let data = {
-        userId: currentUser?.id,
-        postId: item?.id,
-      };
-
-      setLikes([...likes, data]);
-
-      let res = await createPostLike(data);
-
-      // console.log('res: ', res)
-
-      if (!res.success) {
-        Alert.alert("Oups,", "Quelque problème de notre coté");
-      }
-    }
-  };
-
-  const shadowStyles = {
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    elevation: 1,
-  };
-
-  const [likes, setLikes] = useState([]);
-
+  // useEffect avec dépendances correctes - CORRIGÉ
   useEffect(() => {
-    setLikes(item?.postLikes);
-  }, []);
+    if (Array.isArray(item?.postLikes)) {
+      setLikes(item.postLikes);
+    }
+  }, [item?.id]); // Dépend uniquement de l'ID du post
 
-  const createdAt = moment(item?.created_at).format("MMM D");
+  // Calcul mémorisé pour éviter les re-calculs inutiles
+  const liked = useMemo(() => {
+    return likes.some((like) => like.userId === currentUser?.id);
+  }, [likes, currentUser?.id]);
+
+  // Fonction onLike optimisée avec useCallback
+  const onLike = useCallback(async () => {
+    if (!currentUser?.id || !item?.id) {
+      console.warn("onLike: currentUser.id ou item.id manquant");
+      return;
+    }
+
+    const isCurrentlyLiked = likes.some(
+      (like) => like.userId === currentUser.id
+    );
+
+    try {
+      if (isCurrentlyLiked) {
+        // Optimistic update - retirer le like
+        const updatedLikes = likes.filter(
+          (like) => like.userId !== currentUser.id
+        );
+        setLikes(updatedLikes);
+
+        const res = await removePostLike(item.id, currentUser.id);
+
+        if (!res.success) {
+          // Revertir en cas d'erreur
+          setLikes(likes);
+          Alert.alert("Oups,", "Problème lors de la suppression du like");
+        }
+      } else {
+        // Optimistic update - ajouter le like
+        const newLike = {
+          userId: currentUser.id,
+          postId: item.id,
+        };
+        setLikes([...likes, newLike]);
+
+        const res = await createPostLike(newLike);
+
+        if (!res.success) {
+          // Revertir en cas d'erreur
+          setLikes(likes);
+          Alert.alert("Oups,", "Problème lors de l'ajout du like");
+        }
+      }
+    } catch (error) {
+      console.error("Erreur dans onLike:", error);
+      // Revertir à l'état précédent en cas d'erreur
+      setLikes(likes);
+      Alert.alert("Erreur", "Impossible de traiter le like");
+    }
+  }, [likes, currentUser?.id, item?.id]);
+
+  // Fonction onShare optimisée
+  const onShare = useCallback(async () => {
+    try {
+      let content = { message: stripHtmlTags(item?.body) || "" };
+
+      // Vérifier s'il y a un fichier image
+      if (item?.file && item?.file?.includes("postImages")) {
+        console.log("🖼️ Téléchargement image pour partage...");
+
+        const supabaseUrl = getSupabaseFileUrl(item.file);
+        if (supabaseUrl && supabaseUrl.uri) {
+          const localUri = await downloadFile(supabaseUrl.uri);
+
+          if (localUri) {
+            content.url = localUri;
+            console.log("✅ Image téléchargée pour partage");
+          } else {
+            console.log("❌ Échec téléchargement image");
+            Alert.alert(
+              "Information",
+              "L'image n'a pas pu être téléchargée, mais le texte sera partagé."
+            );
+          }
+        }
+      }
+
+      await Share.share(content);
+    } catch (error) {
+      console.error("Erreur lors du partage:", error);
+      Alert.alert("Erreur", "Impossible de partager le contenu");
+    }
+  }, [item?.body, item?.file]);
+
+  // Calculs mémorisés
+  const createdAt = useMemo(() => {
+    return moment(item?.created_at).format("MMM D");
+  }, [item?.created_at]);
+
+  const shadowStyles = useMemo(
+    () => ({
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.06,
+      shadowRadius: 6,
+      elevation: 1,
+    }),
+    []
+  );
 
   const openPostDetails = () => {
-    // Votre logique ici
+    if(!showMoreIcon) return null;
+    router.push({pathname: 'PostDetails', params: {postId: item?.id}})
   };
-
-  // const likes = [];
-  const liked = likes.filter((likes) => likes.userId === currentUser?.id)[0]
-    ? true
-    : false;
 
   return (
     <View style={[styles.container, hasShadow && shadowStyles]}>
@@ -100,20 +181,26 @@ const PostCard = ({ item, currentUser, router, hasShadow = true }) => {
             <Text style={styles.postTime}>{createdAt}</Text>
           </View>
         </View>
-        <TouchableOpacity onPress={openPostDetails}>
+        {
+          showMoreIcon && (
+            <TouchableOpacity onPress={openPostDetails}>
           <Icon
             name="threeDotsHorizontal"
             size={hp(4)}
             color={theme.colors.darkGray}
           />
         </TouchableOpacity>
+          )
+        }
+        
       </View>
+
       <View style={styles.content}>
         <View style={styles.postBody}>
           {item?.body && (
             <RenderHTML
               contentWidth={wp(100)}
-              source={{ html: item?.body }}
+              source={{ html: item.body }}
               tagsStyles={tagsStyles}
             />
           )}
@@ -121,7 +208,7 @@ const PostCard = ({ item, currentUser, router, hasShadow = true }) => {
 
         {item?.file?.includes("postImages") && (
           <Image
-            source={getSupabaseFileUrl(item?.file)}
+            source={getSupabaseFileUrl(item.file)}
             transition={100}
             style={styles.postMedia}
             contentFit="cover"
@@ -131,13 +218,14 @@ const PostCard = ({ item, currentUser, router, hasShadow = true }) => {
         {item?.file && item?.file?.includes("postVideos") && (
           <Video
             style={[styles.postMedia, { height: hp(30) }]}
-            source={getSupabaseFileUrl(item?.file)}
+            source={getSupabaseFileUrl(item.file)}
             useNativeControls
             resizeMode="cover"
             isLooping
           />
         )}
       </View>
+
       <View style={styles.footer}>
         <View style={styles.footerButton}>
           <TouchableOpacity onPress={onLike}>
@@ -148,18 +236,20 @@ const PostCard = ({ item, currentUser, router, hasShadow = true }) => {
               color={liked ? "red" : theme.colors.textLight}
             />
           </TouchableOpacity>
-          <Text style={styles.count}>{likes?.length}</Text>
+          <Text style={styles.count}>{likes?.length || 0}</Text>
         </View>
 
         <View style={styles.footerButton}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={openPostDetails}>
             <Icon name="comment" size={24} color={theme.colors.textLight} />
           </TouchableOpacity>
-          <Text style={styles.count}>{0}</Text>
+          <Text style={styles.count}>{
+              item?.comments[0]?.count
+            }</Text>
         </View>
 
         <View style={styles.footerButton}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={onShare}>
             <Icon name="share" size={24} color={theme.colors.textLight} />
           </TouchableOpacity>
         </View>

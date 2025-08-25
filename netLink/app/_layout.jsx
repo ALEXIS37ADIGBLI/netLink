@@ -51,6 +51,9 @@ function MainLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="Welcome" />
+        <Stack.Screen name="(main)/PostDetails" options={{
+          presentation: 'modal'
+        }} />
       </Stack>
     </SafeAreaProvider>
   );

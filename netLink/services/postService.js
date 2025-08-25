@@ -38,7 +38,8 @@ export const fetchPosts = async (limit = 10) => {
         `
                 *,
                 user: users (id, name, image),
-                postLikes (*)
+                postLikes (*),
+                comments (count)
             `
       )
       .order("created_at", { ascending: false })
@@ -90,6 +91,76 @@ export const removePostLike = async (postId, userId) => {
     }
 
     return { success: true };
+  } catch (error) {
+    console.log("LikePosts error: ", error);
+    return { success: false, msg: "Could not remove like posts" };
+  }
+};
+
+
+export const fetchPostDetails = async (postId) => {
+  try {
+    const { data, error } = await supabase
+      .from("posts")
+      .select(
+        `
+                *,
+                user: users (id, name, image),
+                postLikes (*),
+                comments (*, user:  users(id, name, image))
+            `
+      )
+      .eq('id', postId)
+      .order("created_at", {ascending: false, foreignTable: 'comments'})
+      .single();
+
+    if (error) {
+      console.log("fetchDetails error: ", error);
+      return { success: false, msg: "Could not fetch  posts" };
+    }
+
+    return { success: true, data: data };
+  } catch (error) {
+    console.log("fetchPostDetails error: ", error);
+    return { success: false, msg: "Could not fetch  posts" };
+  }
+};
+
+
+export const creaComment = async (comment) => {
+  try {
+    const { data, error } = await supabase
+      .from("comments")
+      .insert(comment)
+      .select()
+      .single();
+
+    if (error) {
+      console.log("comment error: ", error);
+      return { success: false, msg: "Could not create comment" };
+    }
+
+    return { success: true, data: data };
+  } catch (error) {
+    console.log("comment: ", error);
+    return { success: false, msg: "Could not create comment" };
+  }
+};
+
+
+export const removeComment = async (commentId) => {
+  try {
+    const { error } = await supabase
+      .from("comments")
+      .delete()
+      .eq("id", commentId)
+
+    if (error) {
+      console.log("Posts comment error: ", error);
+      return { success: false, msg: "Could not remove like the post" };
+    }
+
+    return { success: true, data: {commentId} };
   } catch (error) {
     console.log("LikePosts error: ", error);
     return { success: false, msg: "Could not remove like posts" };

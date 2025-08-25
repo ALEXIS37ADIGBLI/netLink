@@ -9,14 +9,24 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Cette application a besoin d'accéder à vos photos pour partager les images.",
+        "NSPhotoLibraryAddUsageDescription": "Cette application a besoin d'accéder à vos photos pour sauvegarder les images partagées."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/netLink.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "INTERNET"
+      ],
+      "package": "com.alexisclever.netLink"
     },
     "web": {
       "bundler": "metro",
@@ -37,6 +47,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "f1c6a052-bb1e-4644-8160-b67f861fd9de"
+      }
     }
   }
 }
