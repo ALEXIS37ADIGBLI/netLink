@@ -35,7 +35,16 @@ const tagsStyles = {
   },
 };
 
-const PostCard = ({ item, currentUser, router, hasShadow = true, showMoreIcon = true }) => {
+const PostCard = ({
+  item,
+  currentUser,
+  router,
+  hasShadow = true,
+  showMoreIcon = true,
+  showDelte = true,
+  onDelete = () => {},
+  onEdit = () => {},
+}) => {
   // Vérifications de sécurité
   if (!item || !currentUser) {
     console.warn("PostCard: item ou currentUser manquant");
@@ -144,10 +153,52 @@ const PostCard = ({ item, currentUser, router, hasShadow = true, showMoreIcon = 
     }
   }, [item?.body, item?.file]);
 
+  const handlePostDelete = () => {
+    Alert.alert("confirmez", "Voulez-vous supprimer ce poste ?", [
+                  {
+                    text: "Retour",
+                    onPress: () => console.log("modal cancelled"),
+                    style: "cancel",
+                  },
+                  {
+                    text: "Supprimer",
+                    onPress: () => onDelete(item),
+                    style: "destructive",
+                  },
+                ]);
+  }
+
+  const formatDate = (date) => {
+          const now = moment();
+          const notificationDate = moment(date);
+          const diffInMinutes = now.diff(notificationDate, 'minutes');
+          const diffInHours = now.diff(notificationDate, 'hours');
+          const diffInDays = now.diff(notificationDate, 'days');
+          
+          if (diffInMinutes < 1) {
+              return 'À l\'instant';
+          } else if (diffInMinutes < 60) {
+              return `Il y a ${diffInMinutes} min`;
+          } else if (diffInHours < 24) {
+              return `Il y a ${diffInHours} h`;
+          } else if (diffInDays === 1) {
+              return 'Hier';
+          } else if (diffInDays < 7) {
+              return `Il y a ${diffInDays} j`;
+          } else if (diffInDays < 30) {
+              const weeks = Math.floor(diffInDays / 7);
+              return `Il y a ${weeks} sem`;
+          } else if (diffInDays < 365) {
+              const months = Math.floor(diffInDays / 30);
+              return `Il y a ${months} mois`;
+          } else {
+              const years = Math.floor(diffInDays / 365);
+              return `Il y a ${years} an${years > 1 ? 's' : ''}`;
+          }
+      }
+
   // Calculs mémorisés
-  const createdAt = useMemo(() => {
-    return moment(item?.created_at).format("MMM D");
-  }, [item?.created_at]);
+  const createdAt = formatDate(item?.created_at);
 
   const shadowStyles = useMemo(
     () => ({
@@ -163,8 +214,8 @@ const PostCard = ({ item, currentUser, router, hasShadow = true, showMoreIcon = 
   );
 
   const openPostDetails = () => {
-    if(!showMoreIcon) return null;
-    router.push({pathname: 'PostDetails', params: {postId: item?.id}})
+    if (!showMoreIcon) return null;
+    router.push({ pathname: "PostDetails", params: { postId: item?.id } });
   };
 
   return (
@@ -181,18 +232,36 @@ const PostCard = ({ item, currentUser, router, hasShadow = true, showMoreIcon = 
             <Text style={styles.postTime}>{createdAt}</Text>
           </View>
         </View>
-        {
-          showMoreIcon && (
-            <TouchableOpacity onPress={openPostDetails}>
-          <Icon
-            name="threeDotsHorizontal"
-            size={hp(4)}
-            color={theme.colors.darkGray}
-          />
-        </TouchableOpacity>
-          )
-        }
-        
+        {showMoreIcon && (
+          <TouchableOpacity onPress={openPostDetails}>
+            <Icon
+              name="threeDotsHorizontal"
+              size={hp(4)}
+              color={theme.colors.darkGray}
+            />
+          </TouchableOpacity>
+        )}
+
+        {showDelte && currentUser.id === item.userId && !showMoreIcon && (
+          <View style={styles.actions}>
+            <TouchableOpacity onPress={() => onEdit(item)}>
+              <Icon
+                name="edit"
+                size={hp(2.5)}
+                // strokeWidth={3}
+                color={theme.colors.darkGray}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handlePostDelete}>
+              <Icon
+                name="delete"
+                size={hp(2.5)}
+                // strokeWidth={3}
+                color={theme.colors.error}
+              />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
 
       <View style={styles.content}>
@@ -243,9 +312,7 @@ const PostCard = ({ item, currentUser, router, hasShadow = true, showMoreIcon = 
           <TouchableOpacity onPress={openPostDetails}>
             <Icon name="comment" size={24} color={theme.colors.textLight} />
           </TouchableOpacity>
-          <Text style={styles.count}>{
-              item?.comments[0]?.count
-            }</Text>
+          <Text style={styles.count}>{item?.comments[0]?.count}</Text>
         </View>
 
         <View style={styles.footerButton}>
@@ -330,6 +397,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
+  },
+
+  actions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 18,
   },
 
   count: {

@@ -9,9 +9,11 @@ import Icon from '../assets/icons'
 const CommentItem = (
     {item,
         canDelete = false,
+        highlight = false,
         onDelete = () => {
-
+        
         }
+        
     }
 ) => {
 
@@ -53,7 +55,7 @@ if (moment().diff(date, 'days') < 1) {
             uri={item?.user?.image}
         />
 
-        <View style={styles.content}>
+        <View style={[styles.content, highlight ? styles.highlight : null]}>
             <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                 <View style={styles.nameContainer}>
                     <Text style={[styles.text, {color: theme.colors.textLight}]}>

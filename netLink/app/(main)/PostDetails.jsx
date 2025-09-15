@@ -1,7 +1,7 @@
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { creaComment, fetchPostDetails, removeComment } from '../../services/postService';
+import { creaComment, fetchPostDetails, removeComment, removePost } from '../../services/postService';
 import { hp, wp } from '../../helpers/common';
 import { theme } from '../../constants/theme';
 import PostCard from '../../components/PostCard';
@@ -12,11 +12,12 @@ import Icon from '../../assets/icons';
 import CommentItem from '../../components/CommentItem';
 import { supabase } from '../../lib/supabase';
 import { getUserData } from '../../services/UserService';
+import { createNotification } from '../../services/notificationService';
 
 const PostDetails = () => {
   const router = useRouter();
   const { user } = useAuth();
-  const { postId } = useLocalSearchParams();
+  const { postId , commentId} = useLocalSearchParams();
   console.log('got postId', postId);
 
   const [startLoading, setStartLoading] = useState(true);
@@ -129,11 +130,39 @@ const PostDetails = () => {
     if (res.success) {
       // Le nouveau commentaire sera ajouté automatiquement via l'événement temps réel
       // Logique pour envoyer une notification au créateur de post
+      if(user?.id !== post.userId) {
+        //Envoie de la notification
+        let notify = {
+          senderId: user?.id,
+          receiveId: post.userId,
+          title: "a commenté votre post",
+          data: JSON.stringify({postId: post.id, commentId: res?.data?.id}),
+        }
+
+        createNotification(notify);
+      }
       inputRef?.current?.clear();
       commentRef.current = "";
     } else {
       Alert.alert('Comment', res.msg);
     }
+  }
+
+  const onDeletePost = async (item) => {
+    console.log("Post supprimé:", item);
+
+    let res = await removePost(post?.id);
+    if (res.success) {
+      router.back();
+    } else {
+      Alert.alert('Post', res.msg);
+    }
+  }
+
+  const onEditPost = (item) => {
+    router.back();
+    router.push({ pathname: 'NewPost', params: {...item}})
+    
   }
 
   if (startLoading) {
@@ -163,6 +192,9 @@ const PostDetails = () => {
           router={router}
           hasShadow={false}
           showMoreIcon={false}
+          showDelete={true}
+          onDelete={onDeletePost}
+          onEdit={onEditPost}
         />
         
         <View style={styles.inputContainer}>
@@ -202,6 +234,7 @@ const PostDetails = () => {
                 key={comment?.id?.toString()}
                 item={comment}
                 onDelete={onDeleteComment}
+                highlight={comment.id == commentId}
                 canDelete={user.id === comment.userId || user.id === post.userId}
               />
             )
