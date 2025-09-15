@@ -221,7 +221,17 @@ const PostCard = ({
   return (
     <View style={[styles.container, hasShadow && shadowStyles]}>
       <View style={styles.header}>
-        <View style={styles.userInfo}>
+        <TouchableOpacity
+          style={styles.userInfo}
+    onPress={() => {
+      if (item?.userId) {
+        router.push({
+          pathname: "Profile",
+          params: { userId: item.userId },
+        });
+      }
+    }}
+        >
           <Avatar
             size={hp(4.5)}
             uri={item?.user?.image}
@@ -231,7 +241,7 @@ const PostCard = ({
             <Text style={styles.username}>{item?.user?.name}</Text>
             <Text style={styles.postTime}>{createdAt}</Text>
           </View>
-        </View>
+        </TouchableOpacity>
         {showMoreIcon && (
           <TouchableOpacity onPress={openPostDetails}>
             <Icon

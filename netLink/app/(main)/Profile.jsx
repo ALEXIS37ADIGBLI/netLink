@@ -11,7 +11,7 @@ import {
 import React, { useState, useEffect } from "react"; // Ajout de useEffect
 import ScreenWrapper from "../../components/ScreenWrapper";
 import { useAuth } from "../../context/AuthContext";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import Header from "../../components/Header";
 import { hp, wp } from "../../helpers/common";
 import Icon from "../../assets/icons";
@@ -21,6 +21,7 @@ import Avatar from "../../components/Avatar";
 import { fetchPosts } from "../../services/postService";
 import PostCard from "../../components/PostCard";
 import Loading from "../../components/Loading";
+import { getUserData } from "../../services/UserService";
 
 const Profile = () => {
   const { user, setAuth } = useAuth();
@@ -32,6 +33,9 @@ const Profile = () => {
   const [currentLimit, setCurrentLimit] = useState(5);
   const [hasMore, setHasMore] = useState(true);
   const POSTS_PER_PAGE = 5;
+  const { userId } = useLocalSearchParams();
+  const [profileUser, setProfileUser] = useState(null);
+const [loadingUser, setLoadingUser] = useState(true);
 
   // Charger les posts quand l'utilisateur est disponible
   useEffect(() => {
@@ -40,6 +44,27 @@ const Profile = () => {
     }
   }, [user?.id]);
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (userId && userId !== user?.id) {
+        let res = await getUserData(userId);
+        if (res.success) {
+          setProfileUser(res.data);
+        }
+      } else {
+        setProfileUser(user);
+      }
+      setLoadingUser(false);
+    };
+    fetchUser();
+  }, [userId, user?.id]);
+
+  useEffect(() => {
+    if (profileUser?.id) {
+      getPosts(false, profileUser.id);
+    }
+  }, [profileUser]);
+
   const onLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -47,7 +72,7 @@ const Profile = () => {
     }
   };
 
-  const getPosts = async (loadMore = false) => {
+  const getPosts = async (loadMore = false, targetUserId = null) => {
     try {
       if (loadMore) {
         setLoadingMore(true);
@@ -60,7 +85,7 @@ const Profile = () => {
         : POSTS_PER_PAGE;
 
       // Passer l'ID utilisateur pour récupérer seulement ses posts
-      let res = await fetchPosts(limitToFetch, user?.id);
+      let res = await fetchPosts(limitToFetch, targetUserId || user?.id);
 
       if (res.success && Array.isArray(res.data)) {
         if (loadMore) {
@@ -184,7 +209,11 @@ const Profile = () => {
 
   return (
     <ScreenWrapper bg="white">
-      <UserHeader user={user} router={router} handleLogout={handleLogout} />
+      <UserHeader
+   user={profileUser}
+   router={router}
+   handleLogout={userId && userId !== user?.id ? null : handleLogout}
+/>
       <FlatList
         data={posts}
         showsVerticalScrollIndicator={false}

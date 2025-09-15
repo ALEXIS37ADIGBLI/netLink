@@ -1,0 +1,21 @@
+[33ma431589[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m HEAD@{0}: reset: moving to HEAD~1
+[33mc031e4e[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{1}: reset: moving to c031e4e
+[33mf184411[m HEAD@{2}: commit: error
+[33mc031e4e[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{3}: commit: implémentation des notifications liées aux commentaires
+[33ma431589[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m HEAD@{4}: commit: correction de default user
+[33m71e9c7d[m HEAD@{5}: pull: Fast-forward
+[33m27d1bb7[m HEAD@{6}: commit: ajout de readme
+[33mf2966d4[m HEAD@{7}: commit: Résolution du bug de dependance
+[33m8ce9f5b[m HEAD@{8}: commit: Mise en forme des fichiers pour debug
+[33m8c6b0d2[m HEAD@{9}: commit: Réalisation du fetch post en real time
+[33m31df531[m HEAD@{10}: commit: affichages des publications sur la page home
+[33m7db6417[m HEAD@{11}: commit: quelque modif sur la page home
+[33mabb1062[m HEAD@{12}: commit: design de creer post
+[33meb94974[m HEAD@{13}: commit: réalisation du design de la page de création de post
+[33mb643ae7[m HEAD@{14}: commit: Réalisation de la page updateProfile
+[33m1a9f8e4[m HEAD@{15}: commit: début de la réalisation du design de la page home et profil
+[33m97f0008[m HEAD@{16}: commit: Configuration de supabase et mise en place du système connection et decconection
+[33mbbcb2a7[m HEAD@{17}: commit: réalisation de la page dinscription
+[33md001001[m HEAD@{18}: commit: Réalisation de la page login
+[33mc7ac797[m HEAD@{19}: commit: Réalisation de la page welcome
+[33m48b4925[m HEAD@{20}: clone: from https://github.com/ALEXIS37ADIGBLI/netLink.git
