@@ -31,7 +31,9 @@ const Home = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [currentLimit, setCurrentLimit] = useState(5);
   const [hasMore, setHasMore] = useState(true);
-  const [notificationCount, setNotificationCount] = useState(0);
+  const [notificationCount, setNotificationCount] = useState(0);      // ← conserve pour le premier chargement
+const [refreshing, setRefreshing] = useState(false);  // ← nouveau pour RefreshControl
+
   const POSTS_PER_PAGE = 5;
 
   // Réinitialiser le compteur de notifications quand l'utilisateur revient sur la page
@@ -188,10 +190,17 @@ const Home = () => {
     }
   }, [user?.id, handlePostEvent, handleNotificationEvent]);
 
-  const getPosts = useCallback(async (loadMore = false) => {
+ const getPosts = useCallback(async (loadMore = false, isRefresh = false) => {
     try {
       if (loadMore) {
         setLoadingMore(true);
+      } else {
+        setLoading(true);
+      }
+      if (loadMore) {
+        setLoadingMore(true);
+      } else if (isRefresh) {
+        setRefreshing(true);
       } else {
         setLoading(true);
       }
@@ -239,6 +248,9 @@ const Home = () => {
     } finally {
       setLoading(false);
       setLoadingMore(false);
+      setLoading(false);
+      setLoadingMore(false);
+     setRefreshing(false);
     }
   }, [currentLimit]);
 
@@ -278,7 +290,7 @@ const Home = () => {
   const onRefresh = useCallback(() => {
     setCurrentLimit(POSTS_PER_PAGE);
     setHasMore(true);
-    getPosts(false);
+    getPosts(false, true);
   }, [getPosts]);
 
   const renderFooter = useCallback(() => {
@@ -425,7 +437,7 @@ const Home = () => {
           onEndReachedThreshold={0.3}
           refreshControl={
             <RefreshControl
-              refreshing={!!loading}
+              refreshing={refreshing}
               onRefresh={onRefresh}
               colors={[safeTheme.colors.primary]}
               tintColor={safeTheme.colors.primary}
